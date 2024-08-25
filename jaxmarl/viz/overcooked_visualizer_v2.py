@@ -4,8 +4,8 @@ import numpy as np
 
 from jaxmarl.viz.window import Window
 import jaxmarl.viz.grid_rendering as rendering
-from jaxmarl.environments.overcooked.common import OBJECT_TO_INDEX, COLOR_TO_INDEX, COLORS
-from jaxmarl.environments.overcooked.overcooked import COOKING_TIMES
+from jaxmarl.environments.overcooked_v2.common import OBJECT_TO_INDEX, COLOR_TO_INDEX, COLORS
+from jaxmarl.environments.overcooked_v2.overcooked import COOKING_TIMES
 
 
 INDEX_TO_COLOR = [k for k,v in COLOR_TO_INDEX.items()]

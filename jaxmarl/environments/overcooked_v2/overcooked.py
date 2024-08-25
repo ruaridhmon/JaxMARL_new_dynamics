@@ -12,13 +12,13 @@ import chex
 from flax import struct
 from flax.core.frozen_dict import FrozenDict
 
-from jaxmarl.environments.overcooked.common import (
+from jaxmarl.environments.overcooked_v2.common import (
     OBJECT_TO_INDEX,
     COLOR_TO_INDEX,
     OBJECT_INDEX_TO_VEC,
     DIR_TO_VEC,
     make_overcooked_map)
-from jaxmarl.environments.overcooked.layouts import overcooked_layouts as layouts
+from jaxmarl.environments.overcooked_v2.layouts import overcooked_v2_layouts as layouts
 
 
 BASE_REW_SHAPING_PARAMS = {
@@ -214,7 +214,7 @@ def decode_pot_status_jax(pot_status, status_keys, status_values):
     default_value = jnp.array([-1, -1, -1], dtype=status_values.dtype)  # Ensure the same dtype and shape
     return jax.lax.cond(found, lambda _: status_values[index], lambda _: default_value, operand=None)
 
-class Overcooked(MultiAgentEnv):
+class Overcooked_v2(MultiAgentEnv):
     """Vanilla Overcooked"""
     def __init__(
             self,
@@ -907,7 +907,7 @@ class Overcooked(MultiAgentEnv):
     @property
     def name(self) -> str:
         """Environment name."""
-        return "Overcooked"
+        return "Overcooked_v2"
 
     @property
     def num_actions(self) -> int:

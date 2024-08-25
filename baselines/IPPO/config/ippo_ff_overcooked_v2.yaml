@@ -12,7 +12,7 @@
 "MAX_GRAD_NORM": 0.5
 "REW_SHAPING_HORIZON": 2.5e6
 "ACTIVATION": "tanh"
-"ENV_NAME": "overcooked"
+"ENV_NAME": "overcooked_v2"
 "ENV_KWARGS": 
   "layout" : "coord_ring"
 "ANNEAL_LR": True

@@ -25,6 +25,10 @@ build:
 run:
 	$(DOCKER_RUN) /bin/bash
 
+run-overcooked:
+	$(DOCKER_RUN) /bin/bash -c "python -u baselines/IPPO/ippo_ff_overcooked_v2.py"
+
+
 test:
 	$(DOCKER_RUN) /bin/bash -c "pytest ./tests/"
 

@@ -159,7 +159,7 @@ def layout_grid_to_dict(grid):
 
     return FrozenDict(layout_dict)
 
-overcooked_layouts = {
+overcooked_v2_layouts = {
     "cramped_room" : FrozenDict(cramped_room),
     "asymm_advantages" : FrozenDict(asymm_advantages),
     "coord_ring" : FrozenDict(coord_ring),
