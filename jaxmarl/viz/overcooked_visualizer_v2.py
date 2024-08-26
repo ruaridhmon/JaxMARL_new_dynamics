@@ -332,7 +332,7 @@ class OvercookedVisualizer:
 
         if num_tomatoes > 0 and not is_done:
             tomato_fns = [rendering.point_in_circle(*coord, 0.13) for coord in [(0.23, 0.33), (0.77, 0.33), (0.50, 0.33)]]
-            tomato_fns = tomato_fns[:num_tomatoes]
+            tomato_fns = tomato_fns[num_onions:num_onions+num_tomatoes]
             [rendering.fill_coords(img, tomato_fn, COLORS["red"]) for tomato_fn in tomato_fns]
             if not is_cooking:
                 lid_fn = rendering.rotate_fn(lid_fn, cx=0.1, cy=0.25, theta=-0.1 * math.pi)
