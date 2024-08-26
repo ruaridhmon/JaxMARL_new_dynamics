@@ -1,36 +1,41 @@
 FROM nvcr.io/nvidia/jax:23.10-py3
 
-# Create user
-ARG UID
-ARG MYUSER
-RUN useradd -u $UID --create-home ${MYUSER}
-USER ${MYUSER}
+# Default workdir
+WORKDIR /home/workdir
 
-# default workdir
-WORKDIR /home/${MYUSER}/
-COPY --chown=${MYUSER} --chmod=765 . .
+# Clone the JaxMARL repository
+RUN git clone https://github.com/FLAIROx/JaxMARL.git
 
-USER root
+# Change working directory to the cloned repository
+WORKDIR /home/workdir/JaxMARL
 
-# install tmux
+# Install JaxMARL and all the requirements system-wide
+RUN pip install -e .
+
+# Install additional Python packages
+RUN pip install imageio
+
+# Install tmux
 RUN apt-get update && \
     apt-get install -y tmux
 
-#jaxmarl from source if needed, all the requirements
-RUN pip install -e .
-
-USER ${MYUSER}
-
-#disabling preallocation
-RUN export XLA_PYTHON_CLIENT_PREALLOCATE=false
-#safety measures
-RUN export XLA_PYTHON_CLIENT_MEM_FRACTION=0.25 
-RUN export TF_FORCE_GPU_ALLOW_GROWTH=true
+# Disabling preallocation
+ENV XLA_PYTHON_CLIENT_PREALLOCATE=false
+# Safety measures
+ENV XLA_PYTHON_CLIENT_MEM_FRACTION=0.9
+ENV TF_FORCE_GPU_ALLOW_GROWTH=true
 
 # Uncomment below if you want jupyter 
 # RUN pip install jupyterlab
 
-#for secrets and debug
+# For secrets and debug
 ENV WANDB_API_KEY=""
 ENV WANDB_ENTITY=""
-RUN git config --global --add safe.directory /home/${MYUSER}
+RUN git config --global --add safe.directory /home/workdir
+
+# Set PYTHONPATH
+ENV PYTHONPATH="/home/local_workdir/JaxMARL:/home/workdir/JaxMARL:$PYTHONPATH"
+
+# Copy local directory to ensure any additional files are available
+COPY . /home/local_workdir/JaxMARL/
+WORKDIR /home/local_workdir/JaxMARL
