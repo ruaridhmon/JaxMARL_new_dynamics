@@ -1,8 +1,8 @@
 <h1 align="center">New Overcooked Dynamics Fork</h1>
 In this fork the Overcooked dynamics have been updated to match the new overcooked dynamics. In these dynamics the agent must interact with the pot to start cooking and the environments can be defined to allow for different soups to be made.
 
-[] reward shaping needs to be adjusted to enable convergence across layouts
-[] the visualisation could be improved to show the number of onions and tomatoes on a plate
+- reward shaping needs to be adjusted to enable convergence across layouts
+- the visualisation could be improved to show the number of onions and tomatoes on a plate
 
 
 
