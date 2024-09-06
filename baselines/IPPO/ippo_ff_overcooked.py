@@ -22,7 +22,7 @@ import wandb
 
 import matplotlib.pyplot as plt
 
-print('test')
+print('test2')
 
 class ActorCritic(nn.Module):
     action_dim: Sequence[int]
