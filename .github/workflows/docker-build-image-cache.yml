@@ -32,19 +32,11 @@ jobs:
 
     - name: Build Docker image using Makefile
       run: |
-        # Define the Docker image name here
-        DOCKER_IMAGE_NAME=jaxmarl
-        # Run the make command to build the Docker image
-        make build --progress=plain --builder default \
-          --build-arg BUILDKIT_INLINE_CACHE=1 \
-          --cache-from type=local,src=/tmp/.buildx-cache \
-          --cache-to type=local,dest=/tmp/.buildx-cache,mode=max
+        make build
 
     - name: Push Docker image to GitHub Container Registry
       run: |
-        # Define the Docker image name again here
         DOCKER_IMAGE_NAME=jaxmarl
         REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-        # Tag and push the image
         docker tag ${DOCKER_IMAGE_NAME}:latest ghcr.io/${REPO_NAME}:latest
         docker push ghcr.io/${REPO_NAME}:latest
