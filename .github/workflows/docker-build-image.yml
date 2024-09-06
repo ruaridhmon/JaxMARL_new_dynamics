@@ -1,10 +1,7 @@
-name: Build, Push, and Test Docker Image
+name: Build and Push Docker Image
 
 on:
-  push:
-    branches:
-      - main  # Or specify other branches
-  pull_request:
+  push
 
 jobs:
   build-and-test:
