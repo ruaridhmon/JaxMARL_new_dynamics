@@ -1,10 +1,11 @@
-NVCC_RESULT := $(shell which nvcc 2> /dev/null)
+NVCC_RESULT := $(shell which nvcc 2> NULL; rm NULL)
 NVCC_TEST := $(notdir $(NVCC_RESULT))
 ifeq ($(NVCC_TEST),nvcc)
 GPUS=--gpus all
 else
 GPUS=
 endif
+
 
 # Set flag for docker run command
 MYUSER=myuser
@@ -19,16 +20,14 @@ ID = $(shell id -u)
 
 # make file commands
 build:
-	DOCKER_BUILDKIT=1 docker buildx build --build-arg USE_CUDA=$(USE_CUDA) --build-arg MYUSER=$(MYUSER) --build-arg UID=$(ID) --tag $(IMAGE) \
-        --cache-from=type=gha \
-        --cache-to=type=gha,mode=max \
-        --progress=plain ${PWD}/.
+	DOCKER_BUILDKIT=1 docker build --build-arg USE_CUDA=$(USE_CUDA) --build-arg MYUSER=$(MYUSER) --build-arg UID=$(ID) --tag $(IMAGE) --progress=plain ${PWD}/.
 
 run:
 	$(DOCKER_RUN) /bin/bash
 
 run-overcooked:
 	$(DOCKER_RUN) /bin/bash -c "python -u baselines/IPPO/ippo_ff_overcooked_v2.py"
+
 
 test:
 	$(DOCKER_RUN) /bin/bash -c "pytest ./tests/"
