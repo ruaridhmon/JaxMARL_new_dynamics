@@ -1,10 +1,8 @@
 name: Build and Push Docker Image Cached
 
 on:
-  push:
-    branches:
-      - main  # Adjust to the branches you want to trigger this workflow
-
+  push
+  
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
