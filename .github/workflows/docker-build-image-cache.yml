@@ -45,6 +45,7 @@ jobs:
           --build-arg UID=$(id -u) \
           --tag ${DOCKER_IMAGE_NAME}:latest \
           --progress=plain \
+          --output=type=registry \
           .
 
     - name: Move new cache to buildx cache directory
