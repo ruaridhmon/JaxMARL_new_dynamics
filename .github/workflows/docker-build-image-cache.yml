@@ -1,8 +1,6 @@
-name: Build and Push Docker Image Cached
-
 on:
   push
-  
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -13,15 +11,17 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
+      with:
+        install: true
+        driver: docker-container  # Use the docker-container driver for better compatibility
 
     - name: Cache Docker layers
       uses: actions/cache@v3
       with:
         path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        key: ${{ runner.os }}-docker-${{ hashFiles('Dockerfile') }}
         restore-keys: |
-          ${{ runner.os }}-buildx-${{ github.ref }}-
-          ${{ runner.os }}-buildx-
+          ${{ runner.os }}-docker-
 
     - name: Log in to GitHub Container Registry
       uses: docker/login-action@v2
@@ -30,30 +30,21 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build Docker image using Makefile with cache
+    - name: Build Docker image using Makefile
       run: |
-        # Define Docker image name
+        # Define the Docker image name here
         DOCKER_IMAGE_NAME=jaxmarl
-        # Build Docker image with caching
-        docker buildx build \
+        # Run the make command to build the Docker image
+        make build --progress=plain --builder default \
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
           --cache-from type=local,src=/tmp/.buildx-cache \
-          --cache-to type=local,dest=/tmp/.buildx-cache-new \
-          --build-arg USE_CUDA=true \  # Adjust as needed or dynamically retrieve
-          --build-arg MYUSER=myuser \  # Adjust as needed or dynamically retrieve
-          --build-arg UID=$(id -u) \
-          --tag ${DOCKER_IMAGE_NAME}:latest \
-          --progress=plain \
-          --output=type=registry \
-          .
-
-    - name: Move new cache to buildx cache directory
-      run: mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+          --cache-to type=local,dest=/tmp/.buildx-cache,mode=max
 
     - name: Push Docker image to GitHub Container Registry
       run: |
-        # Define Docker image name
+        # Define the Docker image name again here
         DOCKER_IMAGE_NAME=jaxmarl
         REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-        # Tag and push Docker image
+        # Tag and push the image
         docker tag ${DOCKER_IMAGE_NAME}:latest ghcr.io/${REPO_NAME}:latest
         docker push ghcr.io/${REPO_NAME}:latest
