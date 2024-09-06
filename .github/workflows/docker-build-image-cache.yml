@@ -1,7 +1,9 @@
 name: Build and Push Docker Image Cached
 
 on:
-  push
+  push:
+    branches:
+      - main  # Adjust to the branches you want to trigger this workflow
 
 jobs:
   build-and-test:
@@ -18,7 +20,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: /tmp/.buildx-cache
-        key: ${{ runner.os }}-buildx-${{ github.ref }}-${{ github.sha }}
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-${{ github.ref }}-
           ${{ runner.os }}-buildx-
@@ -32,19 +34,27 @@ jobs:
 
     - name: Build Docker image using Makefile with cache
       run: |
-        # Define the Docker image name here
+        # Define Docker image name
         DOCKER_IMAGE_NAME=jaxmarl
-        # Use Docker Buildx with cache for faster builds
-        docker buildx build --cache-from type=local,src=/tmp/.buildx-cache --cache-to type=local,dest=/tmp/.buildx-cache-new --build-arg USE_CUDA=$(USE_CUDA) --build-arg MYUSER=$(MYUSER) --build-arg UID=$(ID) --tag ${DOCKER_IMAGE_NAME}:latest --progress=plain .
+        # Build Docker image with caching
+        docker buildx build \
+          --cache-from type=local,src=/tmp/.buildx-cache \
+          --cache-to type=local,dest=/tmp/.buildx-cache-new \
+          --build-arg USE_CUDA=true \  # Adjust as needed or dynamically retrieve
+          --build-arg MYUSER=myuser \  # Adjust as needed or dynamically retrieve
+          --build-arg UID=$(id -u) \
+          --tag ${DOCKER_IMAGE_NAME}:latest \
+          --progress=plain \
+          .
 
     - name: Move new cache to buildx cache directory
       run: mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
     - name: Push Docker image to GitHub Container Registry
       run: |
-        # Define the Docker image name again here
+        # Define Docker image name
         DOCKER_IMAGE_NAME=jaxmarl
         REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-        # Tag and push the image
+        # Tag and push Docker image
         docker tag ${DOCKER_IMAGE_NAME}:latest ghcr.io/${REPO_NAME}:latest
         docker push ghcr.io/${REPO_NAME}:latest
