@@ -1,4 +1,4 @@
-name: Build and Push Docker Image 2222
+name: Build and Push Docker Image
 
 on:
   push
@@ -21,7 +21,6 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    # Use GitHub Actions Cache to store Docker layers
     - name: Cache Docker layers
       uses: actions/cache@v3
       with:
@@ -34,11 +33,13 @@ jobs:
       run: |
         # Define the Docker image name
         DOCKER_IMAGE_NAME=jaxmarl
-        # Build the image using cached layers
+        # Build the image using the correct context (.) and cached layers
         docker build \
           --cache-from=type=local,src=/tmp/.buildx-cache \
           --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max \
-          -t ${DOCKER_IMAGE_NAME}:latest .
+          --push \
+          -t ${DOCKER_IMAGE_NAME}:latest \
+          .
 
     - name: Push Docker image to GitHub Container Registry
       run: |
