@@ -20,8 +20,8 @@ ID = $(shell id -u)
 # make file commands
 build:
 	DOCKER_BUILDKIT=1 docker buildx build --build-arg USE_CUDA=$(USE_CUDA) --build-arg MYUSER=$(MYUSER) --build-arg UID=$(ID) --tag $(IMAGE) \
-        --cache-from=type=local,src=/tmp/.buildx-cache \
-        --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max \
+        --cache-from=type=gha \
+        --cache-to=type=gha,mode=max \
         --progress=plain ${PWD}/.
 
 run:
