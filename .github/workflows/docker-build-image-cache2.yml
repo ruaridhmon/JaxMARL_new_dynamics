@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build and Push Docker Image 2222
 
 on:
   push
@@ -21,12 +21,30 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and Push Docker image with Cache
-      uses: docker/build-push-action@v4
+    # Use GitHub Actions Cache to store Docker layers
+    - name: Cache Docker layers
+      uses: actions/cache@v3
       with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: ghcr.io/${{ github.repository }}:latest
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-docker-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-docker-
+
+    - name: Build Docker image using Makefile with cached layers
+      run: |
+        # Define the Docker image name
+        DOCKER_IMAGE_NAME=jaxmarl
+        # Build the image using cached layers
+        docker build \
+          --cache-from=type=local,src=/tmp/.buildx-cache \
+          --cache-to=type=local,dest=/tmp/.buildx-cache,mode=max \
+          -t ${DOCKER_IMAGE_NAME}:latest .
+
+    - name: Push Docker image to GitHub Container Registry
+      run: |
+        # Define the Docker image name again
+        DOCKER_IMAGE_NAME=jaxmarl
+        REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+        # Tag and push the image
+        docker tag ${DOCKER_IMAGE_NAME}:latest ghcr.io/${REPO_NAME}:latest
+        docker push ghcr.io/${REPO_NAME}:latest
