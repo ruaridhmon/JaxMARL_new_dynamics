@@ -22,6 +22,8 @@ import wandb
 
 import matplotlib.pyplot as plt
 
+print('yoooo')
+
 class ActorCritic(nn.Module):
     action_dim: Sequence[int]
     activation: str = "tanh"
@@ -377,6 +379,8 @@ def main(config):
     config = OmegaConf.to_container(config) 
     layout_name = config["ENV_KWARGS"]["layout"]
     config["ENV_KWARGS"]["layout"] = overcooked_layouts[layout_name]
+
+    print('blaaaa')
 
     wandb.init(
         entity=config["ENTITY"],
