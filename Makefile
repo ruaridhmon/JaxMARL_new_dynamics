@@ -18,6 +18,11 @@ DOCKER_RUN=docker run $(RUN_FLAGS) $(IMAGE)
 USE_CUDA = $(if $(GPUS),true,false)
 ID = $(shell id -u)
 
+GITHUB_USERNAME=ruaridhmon
+GITHUB_REPO=jaxmarl_new_dynamics 
+GITHUB_IMAGE=ghcr.io/$(GITHUB_USERNAME)/$(DOCKER_IMAGE_NAME):latest
+
+
 # make file commands
 build:
 	DOCKER_BUILDKIT=1 docker build --build-arg USE_CUDA=$(USE_CUDA) --build-arg MYUSER=$(MYUSER) --build-arg UID=$(ID) --tag $(IMAGE) --progress=plain ${PWD}/.
@@ -28,6 +33,9 @@ run:
 run-overcooked:
 	$(DOCKER_RUN) /bin/bash -c "python -u baselines/IPPO/ippo_ff_overcooked_v2.py"
 
+push:
+	docker tag $(IMAGE) $(GITHUB_IMAGE)
+	docker push $(GITHUB_IMAGE)
 
 test:
 	$(DOCKER_RUN) /bin/bash -c "pytest ./tests/"

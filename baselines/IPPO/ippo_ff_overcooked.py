@@ -22,8 +22,6 @@ import wandb
 
 import matplotlib.pyplot as plt
 
-print('4')
-
 class ActorCritic(nn.Module):
     action_dim: Sequence[int]
     activation: str = "tanh"
