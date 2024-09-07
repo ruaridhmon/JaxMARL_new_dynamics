@@ -26,7 +26,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: ghcr.io/${{ github.repository }}:latest
+        tags: ghcr.io/jaxmarl1:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
         github-token: ${{ secrets.GITHUB_TOKEN }}
