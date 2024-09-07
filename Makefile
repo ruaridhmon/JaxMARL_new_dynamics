@@ -18,9 +18,18 @@ DOCKER_RUN=docker run $(RUN_FLAGS) $(IMAGE)
 USE_CUDA = $(if $(GPUS),true,false)
 ID = $(shell id -u)
 
+REPO_NAME=$(shell echo ${REPO} | tr '[:upper:]' '[:lower:]')
+
 # make file commands
 build:
-	DOCKER_BUILDKIT=1 docker build --build-arg USE_CUDA=$(USE_CUDA) --build-arg MYUSER=$(MYUSER) --build-arg UID=$(ID) --tag $(IMAGE) --progress=plain ${PWD}/.
+	DOCKER_BUILDKIT=1 docker buildx build \
+	  --build-arg USE_CUDA=$(USE_CUDA) \
+	  --build-arg MYUSER=$(MYUSER) \
+	  --build-arg UID=$(ID) \
+	  --cache-from type=gha,scope=$(REPO_NAME) \
+	  --cache-to type=gha,mode=max,scope=$(REPO_NAME) \
+	  --tag $(IMAGE) \
+	  --progress=plain .
 
 run:
 	$(DOCKER_RUN) /bin/bash

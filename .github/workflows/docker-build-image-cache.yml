@@ -1,0 +1,33 @@
+name: Build and Push Docker Image
+
+on:
+  push
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build Docker image using Makefile with caching
+      run: |
+        make build
+
+    - name: Push Docker image to GitHub Container Registry
+      run: |
+        DOCKER_IMAGE_NAME=jaxmarl
+        REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+        docker tag ${DOCKER_IMAGE_NAME}:latest ghcr.io/${REPO_NAME}:latest
+        docker push ghcr.io/${REPO_NAME}:latest
