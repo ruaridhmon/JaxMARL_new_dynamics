@@ -381,6 +381,8 @@ def main(config):
     config["ENV_KWARGS"]["layout"] = overcooked_layouts[layout_name]
 
     print('blaaaa')
+    import os
+    os.environ["WANDB_MODE"] = "offline"
 
     wandb.init(
         entity=config["ENTITY"],
