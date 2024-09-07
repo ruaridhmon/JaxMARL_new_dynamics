@@ -393,6 +393,7 @@ def main(config):
         name=f'ippo_ff_overcooked_{layout_name}'
     )
 
+    os.environ["WANDB_MODE"] = "offline"
     rng = jax.random.PRNGKey(config["SEED"])
     rngs = jax.random.split(rng, config["NUM_SEEDS"])    
     train_jit = jax.jit(make_train(config))
