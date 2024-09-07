@@ -21,13 +21,12 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build Docker image using Makefile with caching
-      run: |
-        make build
-
-    - name: Push Docker image to GitHub Container Registry
-      run: |
-        DOCKER_IMAGE_NAME=jaxmarl
-        REPO_NAME=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-        docker tag ${DOCKER_IMAGE_NAME}:latest ghcr.io/${REPO_NAME}:latest
-        docker push ghcr.io/${REPO_NAME}:latest
+    - name: Build and push
+      uses: docker/build-push-action@v6
+      with:
+        context: .
+        push: true
+        tags: ghcr.io/${{ github.repository }}:latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        github-token: ${{ secrets.GITHUB_TOKEN }}
