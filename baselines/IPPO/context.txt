@@ -1,0 +1,1 @@
+PYTHON_SCRIPT_PATH=/home/workdir/JaxMARL/ippo_ff_overcooked.py
