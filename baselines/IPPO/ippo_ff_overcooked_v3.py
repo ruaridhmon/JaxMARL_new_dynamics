@@ -156,11 +156,23 @@ def make_train(config):
         transition_steps=config["REW_SHAPING_HORIZON"]
     )
 
-    def reset_with_random_layout(env, rng, config):
+    def reset_with_random_layout(rng, config):
         # Sample a random layout from the chosen subset
-        random_layout = random.choice(config["ENV_KWARGS"]["layout_subset"])
-        config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[random_layout]
+        random_layout = random.choice(config["LAYOUT_SUBSET"])
+
+        # Override the layout argument for the environment creation
+        env_kwargs = config["ENV_KWARGS"].copy()  # Copy to avoid modifying the original config
+        env_kwargs["layout"] = overcooked_v2_layouts[random_layout]
+
+        print(env_kwargs["layout"] )
+        
+        # Create the environment dynamically with the sampled layout and LogWrapper
+        env = jaxmarl.make(config["ENV_NAME"], **env_kwargs)
+        env = LogWrapper(env, replace_info=False)
+        
         return env.reset(rng)
+
+
 
     def train(rng):
 

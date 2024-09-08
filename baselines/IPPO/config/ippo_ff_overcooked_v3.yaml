@@ -15,7 +15,7 @@
 "ENV_NAME": "overcooked_v2"
 "ENV_KWARGS": 
   "layout" : "coord_ring"
-  "layout_subset" : ["cramped_room_0", "cramped_room_1","cramped_room_2","cramped_room_3"]  
+"LAYOUT_SUBSET" : ["cramped_room_0", "cramped_room_1","cramped_room_2","cramped_room_3"]  
 "ANNEAL_LR": True
 "SEED": 30
 "NUM_SEEDS": 1
