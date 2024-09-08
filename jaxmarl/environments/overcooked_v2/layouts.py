@@ -106,6 +106,35 @@ W   A   W
 WWWOXOWWW
 """
 
+cramped_room_grid_0 = """
+WWWWW
+OA AO
+W   W
+WBWXW
+"""
+
+cramped_room_grid_1 = """
+WWWWW
+WA AO
+O   W
+WBWXW
+"""
+
+cramped_room_grid_2 = """
+WWBWW
+OA AW
+W   O
+WWWXW
+"""
+
+cramped_room_grid_3 = """
+WWWWW
+OA AO
+X   W
+WBWWW
+"""
+
+
 def layout_grid_to_dict(grid):
     """Assumes `grid` is string representation of the layout, with 1 line per row, and the following symbols:
     W: wall
@@ -168,4 +197,8 @@ overcooked_v2_layouts = {
     "counter_circuit_onion" : layout_grid_to_dict(counter_circuit_onion_grid),
     "cramped_room_tomatoes" : FrozenDict(cramped_room_tomatoes),    
     "asymm_advantages_tomatoes" : FrozenDict(asymm_advantages_tomatoes),     
+    "cramped_room_0" : layout_grid_to_dict(cramped_room_grid_0),
+    "cramped_room_1" : layout_grid_to_dict(cramped_room_grid_1),
+    "cramped_room_2" : layout_grid_to_dict(cramped_room_grid_2),
+    "cramped_room_3" : layout_grid_to_dict(cramped_room_grid_3),    
 }
