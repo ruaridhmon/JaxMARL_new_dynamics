@@ -14,15 +14,16 @@ import distrax
 from gymnax.wrappers.purerl import LogWrapper, FlattenObservationWrapper
 import jaxmarl
 from jaxmarl.wrappers.baselines import LogWrapper
-from jaxmarl.environments.overcooked import overcooked_layouts
-from jaxmarl.viz.overcooked_visualizer import OvercookedVisualizer
+from jaxmarl.environments.overcooked_v2 import overcooked_v2_layouts
+from jaxmarl.viz.overcooked_visualizer_v2 import OvercookedVisualizer
 import hydra
 from omegaconf import OmegaConf
 import wandb
-
 import matplotlib.pyplot as plt
 
-print('yoooo')
+################################
+# TRAINING A POLICY SO IT IS LAYOUT AGNOSTIC
+import random
 
 class ActorCritic(nn.Module):
     action_dim: Sequence[int]
@@ -155,6 +156,12 @@ def make_train(config):
         transition_steps=config["REW_SHAPING_HORIZON"]
     )
 
+    def reset_with_random_layout(env, rng, config):
+        # Sample a random layout from the chosen subset
+        random_layout = random.choice(config["ENV_KWARGS"]["layout_subset"])
+        config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[random_layout]
+        return env.reset(rng)
+
     def train(rng):
 
         # INIT NETWORK
@@ -181,7 +188,8 @@ def make_train(config):
         # INIT ENV
         rng, _rng = jax.random.split(rng)
         reset_rng = jax.random.split(_rng, config["NUM_ENVS"])
-        obsv, env_state = jax.vmap(env.reset, in_axes=(0,))(reset_rng)
+        # obsv, env_state = jax.vmap(env.reset, in_axes=(0,))(reset_rng)
+        obsv, env_state = jax.vmap(reset_with_random_layout, in_axes=(None, 0, None))(env, reset_rng, config)        
         
         # TRAIN LOOP
         def _update_step(runner_state, unused):
@@ -374,11 +382,11 @@ def make_train(config):
 
 
 
-@hydra.main(version_base=None, config_path="config", config_name="ippo_ff_overcooked")
+@hydra.main(version_base=None, config_path="config", config_name="ippo_ff_overcooked_v2")
 def main(config):
     config = OmegaConf.to_container(config) 
     layout_name = config["ENV_KWARGS"]["layout"]
-    config["ENV_KWARGS"]["layout"] = overcooked_layouts[layout_name]
+    config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[layout_name]
 
     wandb.init(
         entity=config["ENTITY"],
@@ -402,27 +410,28 @@ def main(config):
     viz.animate(state_seq, agent_view_size=5, filename=f"{filename}.gif")
     
     
-    """
-    print('** Saving Results **')
-    filename = f'{config["ENV_NAME"]}_cramped_room_new'
-    rewards = out["metrics"]["returned_episode_returns"].mean(-1).reshape((num_seeds, -1))
-    reward_mean = rewards.mean(0)  # mean 
-    reward_std = rewards.std(0) / np.sqrt(num_seeds)  # standard error
+    # print('** Saving Results **')
+    # num_seeds = 20
+    # filename = f'{config["ENV_NAME"]}_cramped_room_new'
+    # rewards = out["metrics"]["returned_episode_returns"].mean(-1).reshape((num_seeds, -1))
+    # reward_mean = rewards.mean(0)  # mean 
+    # reward_std = rewards.std(0) / np.sqrt(num_seeds)  # standard error
     
-    plt.plot(reward_mean)
-    plt.fill_between(range(len(reward_mean)), reward_mean - reward_std, reward_mean + reward_std, alpha=0.2)
-    # compute standard error
-    plt.xlabel("Update Step")
-    plt.ylabel("Return")
-    plt.savefig(f'{filename}.png')
+    # plt.plot(reward_mean)
+    # plt.fill_between(range(len(reward_mean)), reward_mean - reward_std, reward_mean + reward_std, alpha=0.2)
+    # # compute standard error
+    # plt.xlabel("Update Step")
+    # plt.ylabel("Return")
+    # plt.savefig(f'{filename}.png')
 
     # animate first seed
     train_state = jax.tree_map(lambda x: x[0], out["runner_state"][0])
     state_seq = get_rollout(train_state, config)
     viz = OvercookedVisualizer()
     # agent_view_size is hardcoded as it determines the padding around the layout.
-    viz.animate(state_seq, agent_view_size=5, filename=f"{filename}.gif")
-    """
+    gif_path = f"{filename}.gif"
+    viz.animate(state_seq, agent_view_size=5, filename=gif_path)
+    wandb.log({"animation": wandb.Video(gif_path)})   
 
 if __name__ == "__main__":
     main()

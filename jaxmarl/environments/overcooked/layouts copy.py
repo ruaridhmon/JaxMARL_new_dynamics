@@ -14,35 +14,6 @@ cramped_room = {
     "onion_pile_idx" : jnp.array([5,9]),
     "pot_idx" : jnp.array([2])
 }
-
-cramped_room_grid_0 = """
-WWWWW
-OA AO
-W   W
-WBWXW
-"""
-
-cramped_room_grid_1 = """
-WWWWW
-WA AO
-O   W
-WBWXW
-"""
-
-cramped_room_grid_2 = """
-WWBWW
-OA AW
-W   O
-WWWXW
-"""
-
-cramped_room_grid_3 = """
-WWWWW
-OA AO
-X   W
-WBWWW
-"""
-
 asymm_advantages = {
     "height" : 5,
     "width" : 9,
@@ -151,9 +122,5 @@ overcooked_layouts = {
     "asymm_advantages" : FrozenDict(asymm_advantages),
     "coord_ring" : FrozenDict(coord_ring),
     "forced_coord" : FrozenDict(forced_coord),
-    "counter_circuit" : layout_grid_to_dict(counter_circuit_grid),
-    "cramped_room_0" : layout_grid_to_dict(cramped_room_grid_0),
-    "cramped_room_1" : layout_grid_to_dict(cramped_room_grid_1),
-    "cramped_room_2" : layout_grid_to_dict(cramped_room_grid_2),
-    "cramped_room_3" : layout_grid_to_dict(cramped_room_grid_3),
+    "counter_circuit" : layout_grid_to_dict(counter_circuit_grid)
 }
