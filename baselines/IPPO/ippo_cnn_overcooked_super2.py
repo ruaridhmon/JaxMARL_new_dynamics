@@ -213,9 +213,9 @@ def make_train(config):
         rng, _rng = jax.random.split(rng)
         reset_rng = jax.random.split(_rng, config["NUM_ENVS"])
 
-
         def reset_env_with_random_layout(rng, config):
             random_layout_name = random.choice(config["LAYOUT_SUBSET"])
+            print(f'random_layout_name {random_layout_name}')
             config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[random_layout_name]
             env = jaxmarl.make(config["ENV_NAME"], **config["ENV_KWARGS"])
             env = LogWrapper(env, replace_info=False)
