@@ -31,7 +31,7 @@ run:
 	$(DOCKER_RUN) /bin/bash
 
 run-overcooked:
-	$(DOCKER_RUN) /bin/bash -c "python -u baselines/IPPO/ippo_ff_overcooked_v2.py"
+	$(DOCKER_RUN) /bin/bash -c "python -u baselines/IPPO/ippo_ff_overcooked_v4.py"
 
 push:
 	docker tag $(IMAGE) $(GITHUB_IMAGE)

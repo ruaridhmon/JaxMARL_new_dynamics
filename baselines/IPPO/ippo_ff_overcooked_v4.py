@@ -15,16 +15,13 @@ from gymnax.wrappers.purerl import LogWrapper, FlattenObservationWrapper
 import jaxmarl
 from jaxmarl.wrappers.baselines import LogWrapper
 from jaxmarl.environments.overcooked_v2 import overcooked_v2_layouts
-
 from jaxmarl.viz.overcooked_visualizer_v2 import OvercookedVisualizer
 import hydra
 from omegaconf import OmegaConf
 import wandb
-import matplotlib.pyplot as plt
-
-################################
-# TRAINING A POLICY SO IT IS LAYOUT AGNOSTIC
 import random
+
+import matplotlib.pyplot as plt
 
 class ActorCritic(nn.Module):
     action_dim: Sequence[int]
@@ -73,6 +70,10 @@ class Transition(NamedTuple):
     obs: jnp.ndarray
 
 def get_rollout(train_state, config):
+    random_layout_name = "cramped_room_4"
+    config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[random_layout_name]    
+    print(config["ENV_KWARGS"])
+
     env = jaxmarl.make(config["ENV_NAME"], **config["ENV_KWARGS"])
     # env_params = env.default_params
     # env = LogWrapper(env)
@@ -135,6 +136,13 @@ def unbatchify(x: jnp.ndarray, agent_list, num_envs, num_actors):
     return {a: x[i] for i, a in enumerate(agent_list)}
 
 def make_train(config):
+    random_layout_name = random.choice(config["LAYOUT_SUBSET"])    
+    print(f'random_layout_name {random_layout_name}')
+    config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[random_layout_name]    
+    print('11111111111111')
+    print(config["ENV_KWARGS"])
+    print('222222222222222222')
+
     env = jaxmarl.make(config["ENV_NAME"], **config["ENV_KWARGS"])
 
     config["NUM_ACTORS"] = env.num_agents * config["NUM_ENVS"]
@@ -156,24 +164,6 @@ def make_train(config):
         end_value=0.,
         transition_steps=config["REW_SHAPING_HORIZON"]
     )
-
-    def reset_with_random_layout(rng, config):
-        # Sample a random layout from the chosen subset
-        random_layout = random.choice(config["LAYOUT_SUBSET"])
-
-        # Override the layout argument for the environment creation
-        env_kwargs = config["ENV_KWARGS"].copy()  # Copy to avoid modifying the original config
-        env_kwargs["layout"] = overcooked_v2_layouts[random_layout]
-
-        print(env_kwargs["layout"] )
-        
-        # Create the environment dynamically with the sampled layout and LogWrapper
-        env = jaxmarl.make(config["ENV_NAME"], **env_kwargs)
-        env = LogWrapper(env, replace_info=False)
-        
-        return env.reset(rng)
-
-
 
     def train(rng):
 
@@ -201,10 +191,24 @@ def make_train(config):
         # INIT ENV
         rng, _rng = jax.random.split(rng)
         reset_rng = jax.random.split(_rng, config["NUM_ENVS"])
-        # obsv, env_state = jax.vmap(env.reset, in_axes=(0,))(reset_rng)
-        obsv, env_state = jax.vmap(reset_with_random_layout, in_axes=(0, None))(reset_rng, config)        
 
-        
+        ###########################
+        # DEFINE ANOTHER ENVIRONMENT
+        # random_layout_name = random.choice(config["LAYOUT_SUBSET"])    
+        # config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[random_layout_name]    
+        # env = jaxmarl.make(config["ENV_NAME"], **config["ENV_KWARGS"])
+        # env = LogWrapper(env, replace_info=False)
+        def reset_env_with_random_layout(rng, config):
+            # Randomly sample a layout each time
+            random_layout_name = random.choice(config["LAYOUT_SUBSET"])
+            config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[random_layout_name]
+            env = jaxmarl.make(config["ENV_NAME"], **config["ENV_KWARGS"])
+            env = LogWrapper(env, replace_info=False)
+            return env.reset(rng)        
+        ###########################
+
+        # obsv, env_state = jax.vmap(env.reset, in_axes=(0,))(reset_rng)
+        obsv, env_state = jax.vmap(reset_env_with_random_layout, in_axes=(0, None))(reset_rng, config)
         
         # TRAIN LOOP
         def _update_step(runner_state, unused):
@@ -402,6 +406,8 @@ def main(config):
     config = OmegaConf.to_container(config) 
     layout_name = config["ENV_KWARGS"]["layout"]
     config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[layout_name]
+
+    wandb.login(key="a43be22c6127c100fba30b98b003f3ec27c7a021")
 
     wandb.init(
         entity=config["ENTITY"],

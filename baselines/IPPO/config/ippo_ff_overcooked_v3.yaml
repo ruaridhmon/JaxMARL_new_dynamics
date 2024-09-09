@@ -23,4 +23,4 @@
 # WandB Params
 "ENTITY": "ruaridhmw"
 "PROJECT": "jaxmarl-overcooked"
-"WANDB_MODE" : "offline"
+"WANDB_MODE" : "online"

@@ -107,14 +107,14 @@ WWWOXOWWW
 """
 
 cramped_room_grid_0 = """
-WWWWW
+WWPWW
 OA AO
 W   W
 WBWXW
 """
 
 cramped_room_grid_1 = """
-WWWWW
+WWWPW
 WA AO
 O   W
 WBWXW
@@ -124,16 +124,22 @@ cramped_room_grid_2 = """
 WWBWW
 OA AW
 W   O
-WWWXW
+WPWXW
 """
 
 cramped_room_grid_3 = """
-WWWWW
+WWXWW
 OA AO
-X   W
+P   W
 WBWWW
 """
 
+cramped_room_grid_4 = """
+WWOWW
+OA AW
+B   W
+WXWPW
+"""
 
 def layout_grid_to_dict(grid):
     """Assumes `grid` is string representation of the layout, with 1 line per row, and the following symbols:
@@ -201,4 +207,5 @@ overcooked_v2_layouts = {
     "cramped_room_1" : layout_grid_to_dict(cramped_room_grid_1),
     "cramped_room_2" : layout_grid_to_dict(cramped_room_grid_2),
     "cramped_room_3" : layout_grid_to_dict(cramped_room_grid_3),    
+    "cramped_room_4" : layout_grid_to_dict(cramped_room_grid_4),    
 }
