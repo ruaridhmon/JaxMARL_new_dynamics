@@ -419,7 +419,8 @@ def single_run(config):
     state_seq, shaped_rewards_seq = get_rollout(train_state.params, config)
     viz = OvercookedVisualizer()
     # agent_view_size is hardcoded as it determines the padding around the layout.
-    viz.animate(state_seq, shaped_rewards_seq, agent_view_size=5, filename=f"{filename}.gif")
+    viz.animate(state_seq, agent_view_size=5, filename=f"{filename}.gif")
+
     # viz.animate(state_seq, shaped_rewards_seq, filename=f"{filename}.gif")
     wandb.log({"animation": wandb.Video(f"{filename}.gif")})   
 
