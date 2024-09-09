@@ -29,7 +29,7 @@ ENV TF_FORCE_GPU_ALLOW_GROWTH=true
 # RUN pip install jupyterlab
 
 # For secrets and debug
-ENV WANDB_API_KEY=""
+ENV WANDB_API_KEY="a43be22c6127c100fba30b98b003f3ec27c7a021"
 ENV WANDB_ENTITY=""
 RUN git config --global --add safe.directory /home/workdir
 
