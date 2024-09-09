@@ -208,11 +208,23 @@ def make_train(config):
             params=network_params,
             tx=tx,
         )
-
+        
         # INIT ENV
         rng, _rng = jax.random.split(rng)
         reset_rng = jax.random.split(_rng, config["NUM_ENVS"])
-        obsv, env_state = jax.vmap(env.reset, in_axes=(0,))(reset_rng)
+
+
+        def reset_env_with_random_layout(rng, config):
+            random_layout_name = random.choice(config["LAYOUT_SUBSET"])
+            config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[random_layout_name]
+            env = jaxmarl.make(config["ENV_NAME"], **config["ENV_KWARGS"])
+            env = LogWrapper(env, replace_info=False)
+            return env.reset(rng)        
+        ###########################
+
+        obsv, env_state = jax.vmap(reset_env_with_random_layout, in_axes=(0, None))(reset_rng, config)
+                
+        # obsv, env_state = jax.vmap(env.reset, in_axes=(0,))(reset_rng)
 
         # TRAIN LOOP
         def _update_step(runner_state, unused):
