@@ -1,9 +1,9 @@
 "LR": 0.0005
-"NUM_ENVS": 1024
-"NUM_STEPS": 512
+"NUM_ENVS": 64
+"NUM_STEPS": 256
 "TOTAL_TIMESTEPS": 5e6
 "UPDATE_EPOCHS": 4
-"NUM_MINIBATCHES": 8
+"NUM_MINIBATCHES": 16
 "GAMMA": 0.99
 "GAE_LAMBDA": 0.95
 "CLIP_EPS": 0.2
@@ -20,10 +20,6 @@
 "NUM_SEEDS": 1
 "TUNE": False
 
-# WandB Params
-# "ENTITY": ""
-# "PROJECT": ""
-# "WANDB_MODE" : "disabled"
 "ENTITY": "ruaridhmw"
 "PROJECT": "jaxmarl-overcooked"
 "WANDB_MODE" : "offline"
