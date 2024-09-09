@@ -407,7 +407,7 @@ def main(config):
     layout_name = config["ENV_KWARGS"]["layout"]
     config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[layout_name]
 
-    wandb.login(key="a43be22c6127c100fba30b98b003f3ec27c7a021")
+    # wandb.login(key="a43be22c6127c100fba30b98b003f3ec27c7a021")
 
     wandb.init(
         entity=config["ENTITY"],
