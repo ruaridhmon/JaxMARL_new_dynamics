@@ -19,7 +19,6 @@
 "SEED": 30
 "NUM_SEEDS": 1
 "TUNE": False
-8
 
 # WandB Params
 # "ENTITY": ""
