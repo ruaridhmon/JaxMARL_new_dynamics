@@ -20,6 +20,7 @@ import hydra
 from omegaconf import OmegaConf
 import wandb
 import copy
+import random
 
 import matplotlib.pyplot as plt
 
@@ -107,6 +108,9 @@ class Transition(NamedTuple):
 
 
 def get_rollout(params, config):
+    random_layout_name = "cramped_room_2"
+    config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[random_layout_name]    
+
     env = jaxmarl.make(config["ENV_NAME"], **config["ENV_KWARGS"])
 
     network = ActorCritic(env.action_space().n, activation=config["ACTIVATION"])
@@ -152,6 +156,9 @@ def unbatchify(x: jnp.ndarray, agent_list, num_envs, num_actors):
 
 
 def make_train(config):
+    random_layout_name = random.choice(config["LAYOUT_SUBSET"])    
+    config["ENV_KWARGS"]["layout"] = overcooked_v2_layouts[random_layout_name]
+
     env = jaxmarl.make(config["ENV_NAME"], **config["ENV_KWARGS"])
 
     config["NUM_ACTORS"] = env.num_agents * config["NUM_ENVS"]
@@ -420,8 +427,6 @@ def single_run(config):
     viz = OvercookedVisualizer()
     # agent_view_size is hardcoded as it determines the padding around the layout.
     viz.animate(state_seq, agent_view_size=5, filename=f"{filename}.gif")
-
-    # viz.animate(state_seq, shaped_rewards_seq, filename=f"{filename}.gif")
     wandb.log({"animation": wandb.Video(f"{filename}.gif")})   
 
 
